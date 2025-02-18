@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import User from "@/lib/models/User";
-import { UserRequest } from "@/lib/types/User";
+import User from "@/lib/models/User.model";
+import { UserRequest } from "@/lib/types/User.type";
 
 // Get user/s
 export async function GET(req: Request) {
@@ -36,8 +36,6 @@ export async function POST(req: NextRequest) {
     try {
         const body: UserRequest = await req.json();
 
-        console.log(body);
-
         if (!body.username || !body.email || !body.password) {
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
         }
@@ -49,7 +47,11 @@ export async function POST(req: NextRequest) {
             password: body.password
         });
 
-        return NextResponse.json(newUser, { status: 201 });
+        return NextResponse.json({
+            message: "User has been CREATED sucessfully.",
+            user: newUser
+        })
+        
     } catch (error: unknown) {
         console.error("Error creating user:", error);
         return NextResponse.json(
@@ -80,7 +82,11 @@ export async function PUT(req: NextRequest) {
         
         await user.save();
 
-        return NextResponse.json(user);
+        return NextResponse.json({
+            message: "User has been UPDATED sucessfully.",
+            user: user
+        });
+
     } catch (error: unknown) {
         console.error("Error updating user:", error);
         return NextResponse.json(
@@ -101,7 +107,7 @@ export async function DELETE(req: Request) {
         }
 
         await user.destroy();
-        return NextResponse.json({ message: "User deleted successfully" });
+        return NextResponse.json({ message: "User DELETED successfully" });
     } catch (error: unknown) {
         console.error("Error deleting user:", error);
         return NextResponse.json(
